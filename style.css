@@ -26,8 +26,10 @@ body {
     color: var(--text-main);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
     background: radial-gradient(circle at 10% 20%, #1e1b4b 0%, #000000 40%),
         radial-gradient(circle at 90% 80%, #172554 0%, #000000 40%);
     background-size: 200% 200%;
@@ -187,48 +189,70 @@ body {
 .schedule-grid {
     display: flex;
     flex-direction: column;
-    /* Removed gaps/radius/border from individual rows to create a 'list' look if desired, 
-       but here we make distinct rows for cleaner grouping */
     gap: 1.5rem;
+    width: 100%;
 }
 
 .schedule-row {
-    display: grid;
-    grid-template-columns: 200px 1fr auto;
-    align-items: center;
-    padding: 1.25rem;
-    background: rgba(10, 15, 30, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
+    position: relative;
     transition: all 0.3s ease;
+    width: 100%;
 }
 
 .schedule-row:hover {
-    background: rgba(10, 15, 30, 0.7);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     transform: translateY(-2px);
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-/* Column: Time & Shift */
+.row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+}
+
 .col-time {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .col-time {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.shift-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
 }
 
 .time-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    align-items: flex-end;
-    /* Align right for mobile space-between layout */
+    align-items: flex-start;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 480px) {
     .time-group {
-        align-items: flex-start;
-        /* Align left for desktop sidebar layout */
+        align-items: flex-end;
     }
 }
 
@@ -242,7 +266,6 @@ body {
     font-weight: 600;
     width: fit-content;
     white-space: nowrap;
-    letter-spacing: 0.01em;
 }
 
 .time-badge.oslo {
@@ -683,156 +706,7 @@ footer {
 }
 
 
-/* Mobile Responsiveness */
-@media (max-width: 640px) {
-    .schedule-row {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        padding: 1.5rem;
-    }
-
-    .col-time {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .shift-name {
-        order: -1;
-        /* Show shift name first on mobile */
-        margin-left: 0;
-    }
-
-    .col-person {
-        gap: 1.25rem;
-    }
-
-    .assignee-card {
-        gap: 1rem;
-    }
-
-    .col-action {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-    }
-
-    .schedule-row {
-        position: relative;
-        /* For absolute positioning of edit icon */
-    }
-
-    .col-time {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
-
-    .time-group {
-        align-items: flex-start;
-        width: 100%;
-    }
-
-    .time-badge {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .assignee-card {
-        padding: 0.5rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 12px;
-    }
-
-    .col-action {
-        position: relative;
-        top: 0;
-        right: 0;
-        margin-top: 1rem;
-    }
-
-    /* Adjust controls toolbar for mobile */
-    .controls-toolbar {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .discord-controls {
-        justify-content: space-between;
-        gap: 0.5rem;
-    }
-
-    .btn-discord {
-        flex: 1;
-        justify-content: center;
-        padding: 0.75rem 0.5rem;
-        font-size: 0.85rem;
-    }
-}
-
-/* Fix Avatar Shape */
-.avatar {
-    flex-shrink: 0;
-    /* Prevent shrinking */
-    min-width: 40px;
-    /* Force minimum width */
-    min-height: 40px;
-    /* Force minimum height */
-}
-
-
-/* --- NEW CENTERING AND BUTTON LAYOUT (Mobile First) --- */
-
-.schedule-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1.5rem !important;
-    padding: 1.5rem !important;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border-radius: 20px !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    position: relative !important;
-    transition: all 0.3s ease !important;
-}
-
-.schedule-row:hover {
-    background: rgba(255, 255, 255, 0.05) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
-}
-
-.row-main {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1.25rem !important;
-}
-
-.col-time {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding-bottom: 0.75rem !important;
-}
-
-@media (min-width: 480px) {
-    .col-time {
-        flex-direction: row !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-    }
-}
-
-.shift-name {
-    margin-left: 0 !important;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    color: var(--text-main) !important;
-}
+/* Cleanup: All previous fragmented overrides removed and consolidated above */
 
 .col-person {
     display: flex !important;
