@@ -380,7 +380,35 @@ toggleTimeBtn.addEventListener('click', () => {
     updateTimeDisplay();
 });
 
+const morningTimeOslo = document.getElementById('morningTimeOslo');
+const eveningTimeOslo = document.getElementById('eveningTimeOslo');
+
 function updateTimeDisplay() {
+    // Current week's Monday at target shift starts
+    const targetMonday = currentTargetMonday || getMonday(new Date());
+
+    // Create UTC-aligned dates for the shift starts in Dhaka (UTC+6)
+    // Morning: 08:00 AM Dhaka
+    const mStart = new Date(targetMonday);
+    mStart.setHours(8, 0, 0, 0);
+    const mEnd = new Date(targetMonday);
+    mEnd.setHours(16, 0, 0, 0);
+
+    // Evening: 12:00 PM Dhaka
+    const eStart = new Date(targetMonday);
+    eStart.setHours(12, 0, 0, 0);
+    const eEnd = new Date(targetMonday);
+    eEnd.setHours(20, 0, 0, 0);
+
+    const osloOptions = {
+        timeZone: 'Europe/Oslo',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: !is24Hour
+    };
+
+    const osloFormat = new Intl.DateTimeFormat('en-GB', osloOptions);
+
     if (is24Hour) {
         morningTimeDisplay.textContent = "08:00 - 16:00";
         eveningTimeDisplay.textContent = "12:00 - 20:00";
@@ -388,6 +416,10 @@ function updateTimeDisplay() {
         morningTimeDisplay.textContent = "08:00 AM - 04:00 PM";
         eveningTimeDisplay.textContent = "12:00 PM - 08:00 PM";
     }
+
+    // Update Oslo labels
+    morningTimeOslo.textContent = `Oslo: ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}`;
+    eveningTimeOslo.textContent = `Oslo: ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}`;
 }
 
 function updateRoster() {
@@ -503,55 +535,49 @@ async function sendToDiscord() {
     friday.setDate(currentTargetMonday.getDate() + 4);
     const weekRange = `${currentTargetMonday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${friday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
 
+    // For Discord embed, we use 12h format for clarity
+    const osloOptions = { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', hour12: true };
+    const osloFormat = new Intl.DateTimeFormat('en-US', osloOptions);
+
+    const mStart = new Date(currentTargetMonday); mStart.setHours(8, 0);
+    const mEnd = new Date(currentTargetMonday); mEnd.setHours(16, 0);
+    const eStart = new Date(currentTargetMonday); eStart.setHours(12, 0);
+    const eEnd = new Date(currentTargetMonday); eEnd.setHours(20, 0);
+
     // Create visually rich Discord embed
     const embed = {
         title: "📅 Weekly Roster Schedule",
-        description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) • Monday - Friday\n\u200B`, // Zero-width space for spacing
-        color: 0x3b82f6, // Blue color
+        description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) & Oslo (CET/CEST)\n\u200B`,
+        color: 0x3b82f6,
         fields: [
             {
-                name: "\u200B", // Spacing
-                value: "```ansi\n\u001b[0;33m☀️ MORNING SHIFT\u001b[0m\n```",
+                name: "```ansi\n\u001b[0;33m☀️ MORNING SHIFT\u001b[0m\n```",
+                value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)`,
                 inline: false
             },
             {
-                name: "⏰ Time",
-                value: "```\n08:00 AM - 04:00 PM\n```",
-                inline: true
-            },
-            {
-                name: "👤 Assignee",
-                value: `**${morningPerson.name}**\n\`${morningPerson.short}\``,
-                inline: true
-            },
-            {
-                name: "\u200B", // Spacing
-                value: "\u200B",
-                inline: false
-            },
-            {
-                name: "\u200B", // Spacing
+                name: "\u200B",
                 value: "```ansi\n\u001b[0;34m🌙 EVENING SHIFT\u001b[0m\n```",
                 inline: false
             },
             {
                 name: "⏰ Time",
-                value: "```\n12:00 PM - 08:00 PM\n```",
+                value: `**Dhaka:** 12:00 PM - 08:00 PM\n**Oslo:** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}`,
                 inline: true
             },
             {
-                name: "👥 Assignees",
-                value: eveningPeople.map(p => `**${p.name}**\n\`${p.short}\``).join('\n\n'),
+                name: "👤 Assignees",
+                value: eveningPeople.map(p => `**${p.name}** (\`${p.short}\`)`).join('\n'),
                 inline: true
             }
         ],
         footer: {
             text: "ShiftMate • Automated Roster System",
-            icon_url: "https://cdn.discordapp.com/emojis/1234567890.png" // Optional: Add your icon URL
+            icon_url: "https://jhrahman.github.io/shiftmate/logo.png"
         },
         timestamp: new Date().toISOString(),
         thumbnail: {
-            url: "https://em-content.zobj.net/thumbs/120/twitter/348/calendar_1f4c5.png" // Calendar emoji
+            url: "https://jhrahman.github.io/shiftmate/logo.png"
         }
     };
 

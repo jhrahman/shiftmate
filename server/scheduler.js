@@ -56,33 +56,33 @@ async function sendDiscordNotification() {
     try {
         const { morningPerson, eveningPeople, weekRange } = getNextWeekRoster();
 
+        // Get next Monday for time calculation
+        const today = new Date();
+        const daysUntilMonday = (8 - today.getDay()) % 7 || 7;
+        const targetMonday = new Date(today);
+        targetMonday.setDate(today.getDate() + daysUntilMonday);
+        targetMonday.setHours(0, 0, 0, 0);
+
+        const osloOptions = { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', hour12: true };
+        const osloFormat = new Intl.DateTimeFormat('en-US', osloOptions);
+
+        const mStart = new Date(targetMonday); mStart.setHours(8, 0);
+        const mEnd = new Date(targetMonday); mEnd.setHours(16, 0);
+        const eStart = new Date(targetMonday); eStart.setHours(12, 0);
+        const eEnd = new Date(targetMonday); eEnd.setHours(20, 0);
+
         console.log(`📅 Sending roster for week: ${weekRange}`);
         console.log(`☀️ Morning: ${morningPerson.name}`);
         console.log(`🌙 Evening: ${eveningPeople.map(p => p.name).join(', ')}`);
 
         const embed = {
             title: "📅 Weekly Roster Schedule",
-            description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) • Monday - Friday\n\u200B`,
+            description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) & Oslo (CET/CEST)\n\u200B`,
             color: 0x3b82f6,
             fields: [
                 {
-                    name: "\u200B",
-                    value: "```ansi\n\u001b[0;33m☀️ MORNING SHIFT\u001b[0m\n```",
-                    inline: false
-                },
-                {
-                    name: "⏰ Time",
-                    value: "```\n08:00 AM - 04:00 PM\n```",
-                    inline: true
-                },
-                {
-                    name: "👤 Assignee",
-                    value: `**${morningPerson.name}**\n\`${morningPerson.short}\``,
-                    inline: true
-                },
-                {
-                    name: "\u200B",
-                    value: "\u200B",
+                    name: "```ansi\n\u001b[0;33m☀️ MORNING SHIFT\u001b[0m\n```",
+                    value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)`,
                     inline: false
                 },
                 {
@@ -92,21 +92,22 @@ async function sendDiscordNotification() {
                 },
                 {
                     name: "⏰ Time",
-                    value: "```\n12:00 PM - 08:00 PM\n```",
+                    value: `**Dhaka:** 12:00 PM - 08:00 PM\n**Oslo:** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}`,
                     inline: true
                 },
                 {
-                    name: "👥 Assignees",
-                    value: eveningPeople.map(p => `**${p.name}**\n\`${p.short}\``).join('\n\n'),
+                    name: "👤 Assignees",
+                    value: eveningPeople.map(p => `**${p.name}** (\`${p.short}\`)`).join('\n'),
                     inline: true
                 }
             ],
             footer: {
-                text: "ShiftMate • Automated Roster System"
+                text: "ShiftMate • Automated Roster System",
+                icon_url: "https://jhrahman.github.io/shiftmate/logo.png"
             },
             timestamp: new Date().toISOString(),
             thumbnail: {
-                url: "https://em-content.zobj.net/thumbs/120/twitter/348/calendar_1f4c5.png"
+                url: "https://jhrahman.github.io/shiftmate/logo.png"
             }
         };
 
