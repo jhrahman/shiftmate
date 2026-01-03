@@ -645,3 +645,68 @@ footer {
     gap: 0.25rem;
 }
 
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .schedule-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .col-time {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .shift-name {
+        order: -1; /* Show shift name first on mobile */
+        margin-left: 0;
+    }
+
+    .col-person {
+        gap: 1.25rem;
+    }
+
+    .assignee-card {
+        gap: 1rem;
+    }
+
+    .col-action {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .schedule-row {
+        position: relative; /* For absolute positioning of edit icon */
+    }
+
+    /* Adjust controls toolbar for mobile */
+    .controls-toolbar {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .discord-controls {
+        justify-content: space-between;
+    }
+    
+    .btn-discord {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Fix Avatar Shape */
+.avatar {
+    flex-shrink: 0; /* Prevent shrinking */
+    min-width: 40px; /* Force minimum width */
+    min-height: 40px; /* Force minimum height */
+}
+

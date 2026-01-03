@@ -350,6 +350,8 @@ function updateRoster() {
 
 // Discord Integration
 const DISCORD_WEBHOOK_KEY = 'discord_webhook_url';
+const DEFAULT_WEBHOOK_URL = 'https://discord.com/api/webhooks/1457044858693751078/aWE9WieKwx02Q0etBPW-baDaa_-zFogd7CIQhCCxulFWHZWs_6W-2vQUzJlxKlltDSLY';
+
 const discordConfigModal = document.getElementById('discordConfigModal');
 const configDiscordBtn = document.getElementById('configDiscordBtn');
 const closeDiscordConfigBtn = document.getElementById('closeDiscordConfigBtn');
@@ -358,21 +360,23 @@ const webhookUrlInput = document.getElementById('webhookUrlInput');
 const sendDiscordBtn = document.getElementById('sendDiscordBtn');
 
 function getWebhookUrl() {
-    return localStorage.getItem(DISCORD_WEBHOOK_KEY) || '';
+    const stored = localStorage.getItem(DISCORD_WEBHOOK_KEY);
+    return stored ? stored : DEFAULT_WEBHOOK_URL;
 }
 
 function saveWebhookUrl(url) {
-    localStorage.setItem(DISCORD_WEBHOOK_KEY, url);
+    // If user saves the specific default URL, just clear storage to use default logic
+    if (url === DEFAULT_WEBHOOK_URL) {
+        localStorage.removeItem(DISCORD_WEBHOOK_KEY);
+    } else {
+        localStorage.setItem(DISCORD_WEBHOOK_KEY, url);
+    }
 }
 
 function updateDiscordButtonState() {
-    const hasWebhook = !!getWebhookUrl();
-    sendDiscordBtn.disabled = !hasWebhook;
-    if (!hasWebhook) {
-        sendDiscordBtn.title = "Configure webhook first";
-    } else {
-        sendDiscordBtn.title = "Send to Discord";
-    }
+    // Button is always enabled now because we have a default
+    sendDiscordBtn.disabled = false;
+    sendDiscordBtn.title = "Send to Discord";
 }
 
 function openDiscordConfig() {
