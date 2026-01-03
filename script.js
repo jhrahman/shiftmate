@@ -328,14 +328,26 @@ document.getElementById('nextWeekBtn').addEventListener('click', () => {
     updateRoster();
 });
 
-// PIN Protection for Actions
-const ACTION_PIN = '1232';
+// Security & PIN Protection
+const ACTION_PIN_HASH = 'b6602f58690ca41488e97cd28153671356747c951c55541b6c8d8b8493eb7143';
+const CONFIG_PASS_HASH = '4ebdc92790b86d6233b9f84fc59c1eecef10cc0d409bf2161649477c524538e3';
 
-function checkPin(callback) {
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkPin(callback) {
     const pin = prompt("🔒 Enter 4-digit PIN to proceed:");
-    if (pin === ACTION_PIN) {
+    if (!pin) return;
+
+    const hashedInput = await hashString(pin);
+    if (hashedInput === ACTION_PIN_HASH) {
         callback();
-    } else if (pin !== null) {
+    } else {
         alert("❌ Incorrect PIN!");
     }
 }
@@ -415,21 +427,17 @@ function updateDiscordButtonState() {
     sendDiscordBtn.title = "Send to Discord";
 }
 
-// Password Protection
-const CONFIG_PASSWORD = 'Shiftmate123!@#';
-
-function openDiscordConfig() {
+// Password Protection Configuration
+async function openDiscordConfig() {
     const userPass = prompt("🔒 Enter admin password to configure webhook:");
-    if (userPass === CONFIG_PASSWORD) {
-        webhookUrlInput.value = getWebhookUrl();
-        // Determine what to show in the input so specific default URL is hidden from view unless explicitly set
-        // Actually, user wants to see it if they are configuring it.
-        // But if it's default, maybe we show placeholder?
-        // Let's just show whatever getWebhookUrl returns (which is default) so they know what follows.
+    if (!userPass) return;
 
+    const hashedInput = await hashString(userPass);
+    if (hashedInput === CONFIG_PASS_HASH) {
+        webhookUrlInput.value = getWebhookUrl();
         discordConfigModal.classList.remove('hidden');
         discordConfigModal.style.display = 'flex';
-    } else if (userPass !== null) {
+    } else {
         alert("❌ Incorrect password! Access denied.");
     }
 }
