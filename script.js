@@ -311,8 +311,20 @@ document.getElementById('nextWeekBtn').addEventListener('click', () => {
     updateRoster();
 });
 
-document.getElementById('editShiftBtn').addEventListener('click', () => openModal('morning'));
-document.getElementById('editEveningBtn').addEventListener('click', () => openModal('evening')); // New listener
+// PIN Protection for Actions
+const ACTION_PIN = '1232';
+
+function checkPin(callback) {
+    const pin = prompt("🔒 Enter 4-digit PIN to proceed:");
+    if (pin === ACTION_PIN) {
+        callback();
+    } else if (pin !== null) {
+        alert("❌ Incorrect PIN!");
+    }
+}
+
+document.getElementById('editMorningBtn').addEventListener('click', () => checkPin(() => openModal('morning')));
+document.getElementById('editEveningBtn').addEventListener('click', () => checkPin(() => openModal('evening')));
 
 closeModalBtn.addEventListener('click', closeModal);
 resetOverrideBtn.addEventListener('click', () => {
@@ -550,7 +562,7 @@ async function sendToDiscord() {
     }
 }
 
-sendDiscordBtn.addEventListener('click', sendToDiscord);
+sendDiscordBtn.addEventListener('click', () => checkPin(sendToDiscord));
 
 // Init
 updateRoster();

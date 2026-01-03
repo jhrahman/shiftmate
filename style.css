@@ -717,302 +717,126 @@ footer {
 }
 
 
-/* --- MOBILE FIRST OVERRIDES --- */
+/* --- NEW CENTERING AND BUTTON LAYOUT (Mobile First) --- */
 
-/* Base Layout adjustment */
-.main-container {
-    padding: 1rem;
-    max-width: 100%;
-}
-
-/* Header */
-header {
-    margin-bottom: 2rem;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header h1 {
-    font-size: 1.5rem;
-}
-
-header .current-date {
-    font-size: 0.8rem;
-    text-align: right;
-}
-
-/* Schedule Card */
-.schedule-card {
-    padding: 1rem;
-    border-radius: 24px;
-}
-
-.card-header {
-    margin-bottom: 1.5rem;
-}
-
-.card-header h2 {
-    font-size: 1.2rem;
-}
-
-/* Row / Grid changes for Mobile */
 .schedule-row {
-    grid-template-columns: 1fr;
-    /* Stack vertically by default */
-    gap: 1rem;
-    padding: 1.25rem;
-    position: relative;
-    background: rgba(255, 255, 255, 0.03);
-    /* Lighter background for better contrast */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    padding: 1.5rem !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
 }
 
-/* Time Column */
+.schedule-row:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+}
+
+.row-main {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+}
+
 .col-time {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.75rem;
-    margin-bottom: 0.5rem;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding-bottom: 0.75rem !important;
 }
 
 .shift-name {
-    margin-left: 0;
-    font-size: 1.1rem;
-    order: -1;
-    /* Name first */
+    margin-left: 0 !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: var(--text-main) !important;
 }
 
-.time-badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-}
-
-/* Person Column */
 .col-person {
-    gap: 1rem;
-    padding-left: 0.5rem;
-    /* Indent slightly */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    padding-left: 0 !important;
 }
 
-.assignee-card {
-    position: relative;
-    padding-right: 2rem;
-    /* Make space for action button if needed */
+.row-action {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+    padding-top: 0.5rem !important;
 }
 
-/* Edit Button Positioning */
-.col-action {
-    position: absolute;
-    top: 1.25rem;
-    right: 1rem;
-}
-
-.icon-btn {
-    background: rgba(255, 255, 255, 0.1);
-    /* Visible button background */
-    width: 36px;
-    height: 36px;
+.btn-edit-shift {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    opacity: 1;
-    /* Always visible on mobile */
-    color: var(--primary);
-}
-
-/* Controls Toolbar - Mobile Optimized */
-.controls-toolbar {
-    flex-direction: row;
-    /* Keep side by side if possible, or wrap */
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.discord-controls {
+    gap: 0.5rem;
     width: 100%;
-    display: flex;
-    gap: 0.75rem;
-}
-
-#configDiscordBtn {
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.btn-discord {
-    flex: 1;
-    height: 48px;
-    /* Large touch target */
+    /* Mobile full width */
     justify-content: center;
-    font-size: 1rem;
-    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
 }
 
-/* Avatar consistency */
+.btn-edit-shift:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-edit-shift i {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Avatar Consistency Fix */
 .avatar {
-    width: 48px;
-    /* Larger avatars for mobile */
-    height: 48px;
-    min-width: 48px;
-    font-size: 1rem;
-    border-width: 2px;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
 }
 
-/* Modal mobile optimizations */
-.modal-content {
-    width: 95%;
-    max-width: 100%;
-    padding: 1.5rem;
-    margin: 1rem;
-    border-radius: 20px;
-    bottom: 0;
-}
-
-.person-option {
-    padding: 1rem;
-    /* Larger touch area */
-}
-
-
-/* Fix Overlap Issue */
-.mobile-fix-applied {
-    display: block;
-}
-
-/* Marker */
-
-@media (max-width: 640px) {
-
-    /* Adjust Time Column to make space or move it */
-    .col-time {
-        position: relative;
-        padding-right: 50px;
-        /* Make space for the absolute icon */
-        margin-right: 0;
-        align-items: flex-start;
-        /* Align text to left */
-        flex-direction: column;
-        /* Stack time and name */
-        gap: 0.25rem;
-    }
-
-    /* Move the pen icon to be clearly Top-Right of the row/card */
-    .col-action {
-        position: absolute;
-        top: 1.25rem;
-        right: 1.25rem;
-        z-index: 10;
-        margin: 0;
-    }
-
-    /* Ensure Shift Name has specific styling */
-    .shift-name {
-        order: -1;
-        font-size: 1.1rem;
-        margin-bottom: 0.25rem;
-        display: block;
-        width: 100%;
-    }
-
-    /* Time Badge below name */
-    .time-badge {
-        font-size: 0.8rem;
-        align-self: flex-start;
-    }
-}
-
-
-/* FORCE FIX for Icon Overlap */
-@media (max-width: 640px) {
-    .col-time {
-        width: auto !important;
-        max-width: calc(100% - 50px) !important;
-        /* Leave 50px space for icon */
-        padding-right: 0 !important;
-        margin-right: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        /* Stack Name/Time */
-        align-items: flex-start !important;
-    }
-
-    .col-action {
-        position: absolute !important;
-        top: 1.5rem !important;
-        /* Match padding of row */
-        right: 1.5rem !important;
-        width: 40px !important;
-        height: 40px !important;
-        background: rgba(255, 255, 255, 0.08) !important;
-        border-radius: 50% !important;
-        display: flex !important;
+/* Desktop Overrides */
+@media (min-width: 768px) {
+    .row-main {
+        flex-direction: row !important;
         align-items: center !important;
-        justify-content: center !important;
-        z-index: 100 !important;
-    }
-
-    .schedule-row {
-        position: relative !important;
-        padding-top: 1.5rem !important;
-    }
-}
-
-
-/* DESKTOP RESET - Fix overlapping caused by mobile global styles */
-@media (min-width: 641px) {
-    .schedule-row {
-        grid-template-columns: 260px 1fr 50px !important;
-        /* Increased width for time column */
-        align-items: center !important;
-        padding: 1.5rem 2rem !important;
-        /* More padding on desktop */
-        gap: 1rem !important;
     }
 
     .col-time {
-        width: auto !important;
-        max-width: none !important;
+        flex: 0 0 240px !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        margin-right: 0 !important;
-        padding-right: 0 !important;
+        border-bottom: none !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding-bottom: 0 !important;
+        padding-right: 1.5rem !important;
     }
 
-    .col-action {
-        position: static !important;
+    .col-person {
+        flex: 1 !important;
+        padding-left: 1.5rem !important;
+    }
+
+    .btn-edit-shift {
         width: auto !important;
-        background: transparent !important;
-        height: auto !important;
-        display: flex !important;
-        justify-content: center !important;
-        /* Center icon in its column */
-        margin: 0 !important;
-    }
-
-    /* Target the pen icon specifically to ensure it's not too far right if that was the issue */
-    .icon-btn {
-        margin-right: 0.5rem;
-    }
-
-    .shift-name {
-        order: 0 !important;
-        /* Reset order */
-        font-size: 1rem !important;
-        margin-left: 0.25rem !important;
-    }
-
-    .time-badge {
-        font-size: 0.8rem !important;
-    }
-
-    .schedule-card {
-        padding: 2.5rem !important;
+        /* Desktop natural width */
+        min-width: 160px !important;
     }
 }

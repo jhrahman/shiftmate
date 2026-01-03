@@ -59,48 +59,48 @@
                 <div class="schedule-grid">
                     <!-- Morning Row -->
                     <div class="schedule-row">
-                        <div class="col-time">
-                            <div class="time-badge morning">
-                                <i class="fa-regular fa-sun"></i>
-                                <span id="morningTimeDisplay">08:00 AM - 04:00 PM</span>
+                        <div class="row-main">
+                            <div class="col-time">
+                                <div class="time-badge morning">
+                                    <i class="fa-regular fa-sun"></i>
+                                    <span id="morningTimeDisplay">08:00 AM - 04:00 PM</span>
+                                </div>
+                                <span class="shift-name">Morning Shift</span>
                             </div>
-                            <span class="shift-name">Morning Shift</span>
-                        </div>
-
-                        <div class="col-person">
-                            <div class="assignee-card">
-                                <div class="avatar" id="morningAvatar">M</div>
-                                <div class="person-info">
-                                    <span class="name" id="morningPerson">Mahmudur Rahman</span>
-                                    <span class="role">Assignee</span>
+                            <div class="col-person">
+                                <div class="assignee-card">
+                                    <div class="avatar" id="morningAvatar">M</div>
+                                    <div class="person-info">
+                                        <span class="name" id="morningPerson">Person Name</span>
+                                        <span class="role">Assignee</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-action">
-                            <button class="icon-btn" id="editShiftBtn" aria-label="Edit Morning Shift">
-                                <i class="fa-solid fa-pen"></i>
+                        <div class="row-action">
+                            <button class="btn-edit-shift" id="editMorningBtn" aria-label="Edit Morning Shift">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Shift
                             </button>
                         </div>
                     </div>
 
                     <!-- Evening Row -->
                     <div class="schedule-row">
-                        <div class="col-time">
-                            <div class="time-badge evening">
-                                <i class="fa-solid fa-moon"></i>
-                                <span id="eveningTimeDisplay">12:00 PM - 08:00 PM</span>
+                        <div class="row-main">
+                            <div class="col-time">
+                                <div class="time-badge evening">
+                                    <i class="fa-solid fa-moon"></i>
+                                    <span id="eveningTimeDisplay">12:00 PM - 08:00 PM</span>
+                                </div>
+                                <span class="shift-name">Evening Shift</span>
                             </div>
-                            <span class="shift-name">Evening Shift</span>
+                            <div class="col-person" id="eveningList">
+                                <!-- Populated by JS -->
+                            </div>
                         </div>
-
-                        <div class="col-person" id="eveningList">
-                            <!-- JS injects assignee-cards here -->
-                        </div>
-
-                        <div class="col-action">
-                            <button class="icon-btn" id="editEveningBtn" aria-label="Edit Evening Shift">
-                                <i class="fa-solid fa-pen"></i>
+                        <div class="row-action">
+                            <button class="btn-edit-shift" id="editEveningBtn" aria-label="Edit Evening Shift">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Shift
                             </button>
                         </div>
                     </div>
