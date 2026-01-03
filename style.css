@@ -213,8 +213,16 @@ body {
 .time-group {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
+    align-items: flex-end;
+    /* Align right for mobile space-between layout */
+}
+
+@media (min-width: 768px) {
+    .time-group {
+        align-items: flex-start;
+        /* Align left for desktop sidebar layout */
+    }
 }
 
 .time-badge {
