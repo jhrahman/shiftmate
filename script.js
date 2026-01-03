@@ -17,6 +17,13 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 // State
 let currentOffset = 0; // Weeks from current week
+
+// Logic: If today is Saturday (6) or Sunday (0), show the NEXT week by default
+const _today = new Date();
+if (_today.getDay() === 6 || _today.getDay() === 0) {
+    currentOffset = 1;
+}
+
 let currentTargetMonday = null; // To store the currently viewed week's Monday
 
 // Storage Keys

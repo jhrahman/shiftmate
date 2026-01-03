@@ -548,6 +548,7 @@ footer {
 .reset-link.hidden {
     display: none;
 }
+
 /* Discord Controls */
 .discord-controls {
     display: flex;
@@ -664,7 +665,8 @@ footer {
     }
 
     .shift-name {
-        order: -1; /* Show shift name first on mobile */
+        order: -1;
+        /* Show shift name first on mobile */
         margin-left: 0;
     }
 
@@ -681,9 +683,10 @@ footer {
         top: 1rem;
         right: 1rem;
     }
-    
+
     .schedule-row {
-        position: relative; /* For absolute positioning of edit icon */
+        position: relative;
+        /* For absolute positioning of edit icon */
     }
 
     /* Adjust controls toolbar for mobile */
@@ -696,7 +699,7 @@ footer {
     .discord-controls {
         justify-content: space-between;
     }
-    
+
     .btn-discord {
         flex: 1;
         justify-content: center;
@@ -705,9 +708,12 @@ footer {
 
 /* Fix Avatar Shape */
 .avatar {
-    flex-shrink: 0; /* Prevent shrinking */
-    min-width: 40px; /* Force minimum width */
-    min-height: 40px; /* Force minimum height */
+    flex-shrink: 0;
+    /* Prevent shrinking */
+    min-width: 40px;
+    /* Force minimum width */
+    min-height: 40px;
+    /* Force minimum height */
 }
 
 
@@ -752,11 +758,13 @@ header .current-date {
 
 /* Row / Grid changes for Mobile */
 .schedule-row {
-    grid-template-columns: 1fr; /* Stack vertically by default */
+    grid-template-columns: 1fr;
+    /* Stack vertically by default */
     gap: 1rem;
     padding: 1.25rem;
     position: relative;
-    background: rgba(255, 255, 255, 0.03); /* Lighter background for better contrast */
+    background: rgba(255, 255, 255, 0.03);
+    /* Lighter background for better contrast */
 }
 
 /* Time Column */
@@ -773,7 +781,8 @@ header .current-date {
 .shift-name {
     margin-left: 0;
     font-size: 1.1rem;
-    order: -1; /* Name first */
+    order: -1;
+    /* Name first */
 }
 
 .time-badge {
@@ -784,12 +793,14 @@ header .current-date {
 /* Person Column */
 .col-person {
     gap: 1rem;
-    padding-left: 0.5rem; /* Indent slightly */
+    padding-left: 0.5rem;
+    /* Indent slightly */
 }
 
 .assignee-card {
     position: relative;
-    padding-right: 2rem; /* Make space for action button if needed */
+    padding-right: 2rem;
+    /* Make space for action button if needed */
 }
 
 /* Edit Button Positioning */
@@ -800,20 +811,23 @@ header .current-date {
 }
 
 .icon-btn {
-    background: rgba(255, 255, 255, 0.1); /* Visible button background */
+    background: rgba(255, 255, 255, 0.1);
+    /* Visible button background */
     width: 36px;
     height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    opacity: 1; /* Always visible on mobile */
+    opacity: 1;
+    /* Always visible on mobile */
     color: var(--primary);
 }
 
 /* Controls Toolbar - Mobile Optimized */
 .controls-toolbar {
-    flex-direction: row; /* Keep side by side if possible, or wrap */
+    flex-direction: row;
+    /* Keep side by side if possible, or wrap */
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1.5rem;
@@ -834,7 +848,8 @@ header .current-date {
 
 .btn-discord {
     flex: 1;
-    height: 48px; /* Large touch target */
+    height: 48px;
+    /* Large touch target */
     justify-content: center;
     font-size: 1rem;
     box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
@@ -842,7 +857,8 @@ header .current-date {
 
 /* Avatar consistency */
 .avatar {
-    width: 48px; /* Larger avatars for mobile */
+    width: 48px;
+    /* Larger avatars for mobile */
     height: 48px;
     min-width: 48px;
     font-size: 1rem;
@@ -860,21 +876,30 @@ header .current-date {
 }
 
 .person-option {
-    padding: 1rem; /* Larger touch area */
+    padding: 1rem;
+    /* Larger touch area */
 }
 
 
 /* Fix Overlap Issue */
-.mobile-fix-applied { display: block; } /* Marker */
+.mobile-fix-applied {
+    display: block;
+}
+
+/* Marker */
 
 @media (max-width: 640px) {
+
     /* Adjust Time Column to make space or move it */
     .col-time {
         position: relative;
-        padding-right: 50px; /* Make space for the absolute icon */
+        padding-right: 50px;
+        /* Make space for the absolute icon */
         margin-right: 0;
-        align-items: flex-start; /* Align text to left */
-        flex-direction: column; /* Stack time and name */
+        align-items: flex-start;
+        /* Align text to left */
+        flex-direction: column;
+        /* Stack time and name */
         gap: 0.25rem;
     }
 
@@ -908,17 +933,20 @@ header .current-date {
 @media (max-width: 640px) {
     .col-time {
         width: auto !important;
-        max-width: calc(100% - 50px) !important; /* Leave 50px space for icon */
+        max-width: calc(100% - 50px) !important;
+        /* Leave 50px space for icon */
         padding-right: 0 !important;
         margin-right: 0 !important;
         display: flex !important;
-        flex-direction: column !important; /* Stack Name/Time */
+        flex-direction: column !important;
+        /* Stack Name/Time */
         align-items: flex-start !important;
     }
-    
+
     .col-action {
         position: absolute !important;
-        top: 1.5rem !important; /* Match padding of row */
+        top: 1.5rem !important;
+        /* Match padding of row */
         right: 1.5rem !important;
         width: 40px !important;
         height: 40px !important;
@@ -936,3 +964,55 @@ header .current-date {
     }
 }
 
+
+/* DESKTOP RESET - Fix overlapping caused by mobile global styles */
+@media (min-width: 641px) {
+    .schedule-row {
+        grid-template-columns: 260px 1fr 50px !important;
+        /* Increased width for time column */
+        align-items: center !important;
+        padding: 1.5rem 2rem !important;
+        /* More padding on desktop */
+        gap: 1rem !important;
+    }
+
+    .col-time {
+        width: auto !important;
+        max-width: none !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .col-action {
+        position: static !important;
+        width: auto !important;
+        background: transparent !important;
+        height: auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        /* Center icon in its column */
+        margin: 0 !important;
+    }
+
+    /* Target the pen icon specifically to ensure it's not too far right if that was the issue */
+    .icon-btn {
+        margin-right: 0.5rem;
+    }
+
+    .shift-name {
+        order: 0 !important;
+        /* Reset order */
+        font-size: 1rem !important;
+        margin-left: 0.25rem !important;
+    }
+
+    .time-badge {
+        font-size: 0.8rem !important;
+    }
+
+    .schedule-card {
+        padding: 2.5rem !important;
+    }
+}
