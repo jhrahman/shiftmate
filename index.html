@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Roster</title>
+    <meta name="description" content="Automated weekly roster for the team.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>ShiftMate</span>
+            </div>
+            <div class="current-date" id="currentDateDisplay">
+                <!-- Date inserted by JS -->
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="roster-card">
+                <div class="roster-header">
+                    <button class="nav-btn" id="prevWeekBtn" aria-label="Previous Week">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div class="week-info">
+                        <h1 id="weekTitle">Current Week</h1>
+                        <p id="weekRange" class="subtitle">Jan 01 - Jan 05</p>
+                    </div>
+                    <button class="nav-btn" id="nextWeekBtn" aria-label="Next Week">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="controls-toolbar">
+                    <div class="toggle-group">
+                        <span class="badget-label">Time:</span>
+                        <button id="toggleTimeBtn" class="toggle-btn">24h</button>
+                    </div>
+                    <div class="discord-controls">
+                        <button id="configDiscordBtn" class="icon-btn-small" title="Configure Discord Webhook">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                        <button id="sendDiscordBtn" class="btn-discord" title="Send to Discord">
+                            <i class="fa-brands fa-discord"></i> Notify Discord
+                        </button>
+                    </div>
+                </div>
+
+                <div class="schedule-grid">
+                    <!-- Morning Row -->
+                    <div class="schedule-row">
+                        <div class="col-time">
+                            <div class="time-badge morning">
+                                <i class="fa-regular fa-sun"></i>
+                                <span id="morningTimeDisplay">08:00 AM - 04:00 PM</span>
+                            </div>
+                            <span class="shift-name">Morning Shift</span>
+                        </div>
+
+                        <div class="col-person">
+                            <div class="assignee-card">
+                                <div class="avatar" id="morningAvatar">M</div>
+                                <div class="person-info">
+                                    <span class="name" id="morningPerson">Mahmudur Rahman</span>
+                                    <span class="role">Assignee</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-action">
+                            <button class="icon-btn" id="editShiftBtn" aria-label="Edit Morning Shift">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Evening Row -->
+                    <div class="schedule-row">
+                        <div class="col-time">
+                            <div class="time-badge evening">
+                                <i class="fa-solid fa-moon"></i>
+                                <span id="eveningTimeDisplay">12:00 PM - 08:00 PM</span>
+                            </div>
+                            <span class="shift-name">Evening Shift</span>
+                        </div>
+
+                        <div class="col-person" id="eveningList">
+                            <!-- JS injects assignee-cards here -->
+                        </div>
+
+                        <div class="col-action">
+                            <button class="icon-btn" id="editEveningBtn" aria-label="Edit Evening Shift">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Override Modal -->
+            <div id="overrideModal" class="modal hidden">
+                <div class="modal-content">
+                    <h3 id="modalTitle">Manual Shift Override</h3>
+                    <p id="modalDesc">Select who takes the shift:</p>
+                    <div class="select-group" id="modalPersonList">
+                        <!-- Options filled by JS -->
+                    </div>
+                    <div class="modal-actions">
+                        <button id="closeModalBtn" class="btn-cancel">Cancel</button>
+                        <button id="resetOverrideBtn" class="btn-reset hidden">Reset to Auto</button>
+                        <button id="saveOverrideBtn" class="btn-save hidden">Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discord Config Modal -->
+            <div id="discordConfigModal" class="modal hidden">
+                <div class="modal-content">
+                    <h3>Discord Webhook Configuration</h3>
+                    <p>Enter your Discord webhook URL to enable notifications:</p>
+                    <div class="input-group">
+                        <label for="webhookUrlInput">Webhook URL:</label>
+                        <input type="url" id="webhookUrlInput" placeholder="https://discord.com/api/webhooks/..."
+                            class="webhook-input">
+                        <small class="help-text">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Get this from Discord: Server Settings → Integrations → Webhooks
+                        </small>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="closeDiscordConfigBtn" class="btn-cancel">Cancel</button>
+                        <button id="saveWebhookBtn" class="btn-save">Save Webhook</button>
+                    </div>
+                </div>
+            </div>
+
+            <section class="info-card">
+                <h3><i class="fa-solid fa-circle-info"></i> Schedule Info</h3>
+                <p>Timezone: Dhaka (UTC+6)</p>
+                <p>Work Days: Monday - Friday</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Team Roster. Automated System.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
