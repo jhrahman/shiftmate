@@ -125,27 +125,33 @@ function renderWeekInfo(mon) {
 
     document.getElementById('weekRange').textContent = `${monStr} - ${friStr}`;
 
-    // Saturday/Sunday Logic: Adjust Title labels
-    const d = new Date();
-    const isWeekendShift = (d.getDay() === 6 || d.getDay() === 0);
+    // Reliable Date-based labeling (Independent of currentOffset state)
+    const today = new Date();
+    const todayMonday = getMonday(today);
 
-    // Relative labels based on the "Weekend Shift"
-    let displayOffset = currentOffset;
-    if (isWeekendShift) {
-        displayOffset = currentOffset - 1;
+    // Baseline shifted Monday (If Sat/Sun, Current = upcoming Monday)
+    const baselineMonday = new Date(todayMonday);
+    if (today.getDay() === 6 || today.getDay() === 0) {
+        baselineMonday.setDate(todayMonday.getDate() + 7);
     }
 
-    if (displayOffset === 0) {
-        document.getElementById('weekTitle').textContent = "Current Week";
-    } else if (displayOffset === 1) {
-        document.getElementById('weekTitle').textContent = "Next Week";
-    } else if (displayOffset === -1) {
-        document.getElementById('weekTitle').textContent = "Previous Week";
+    // Difference in weeks
+    const diffWeeks = Math.round((mon.getTime() - baselineMonday.getTime()) / ONE_WEEK_MS);
+
+    let titleLabel = "";
+    if (diffWeeks === 0) {
+        titleLabel = "Current Week";
+    } else if (diffWeeks === 1) {
+        titleLabel = "Next Week";
+    } else if (diffWeeks === -1) {
+        titleLabel = "Previous Week";
+    } else if (diffWeeks > 1) {
+        titleLabel = `${diffWeeks} Weeks from Now`;
     } else {
-        const absOffset = Math.abs(displayOffset);
-        const direction = displayOffset > 0 ? "Weeks from Now" : "Weeks Ago";
-        document.getElementById('weekTitle').textContent = `${absOffset} ${direction}`;
+        titleLabel = `${Math.abs(diffWeeks)} Weeks Ago`;
     }
+
+    document.getElementById('weekTitle').textContent = titleLabel;
 }
 
 function renderShifts(morning, eveningGroup) {
