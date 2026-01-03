@@ -710,3 +710,156 @@ footer {
     min-height: 40px; /* Force minimum height */
 }
 
+
+/* --- MOBILE FIRST OVERRIDES --- */
+
+/* Base Layout adjustment */
+.main-container {
+    padding: 1rem;
+    max-width: 100%;
+}
+
+/* Header */
+header {
+    margin-bottom: 2rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 1.5rem;
+}
+
+header .current-date {
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+/* Schedule Card */
+.schedule-card {
+    padding: 1rem;
+    border-radius: 24px;
+}
+
+.card-header {
+    margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+    font-size: 1.2rem;
+}
+
+/* Row / Grid changes for Mobile */
+.schedule-row {
+    grid-template-columns: 1fr; /* Stack vertically by default */
+    gap: 1rem;
+    padding: 1.25rem;
+    position: relative;
+    background: rgba(255, 255, 255, 0.03); /* Lighter background for better contrast */
+}
+
+/* Time Column */
+.col-time {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.shift-name {
+    margin-left: 0;
+    font-size: 1.1rem;
+    order: -1; /* Name first */
+}
+
+.time-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Person Column */
+.col-person {
+    gap: 1rem;
+    padding-left: 0.5rem; /* Indent slightly */
+}
+
+.assignee-card {
+    position: relative;
+    padding-right: 2rem; /* Make space for action button if needed */
+}
+
+/* Edit Button Positioning */
+.col-action {
+    position: absolute;
+    top: 1.25rem;
+    right: 1rem;
+}
+
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1); /* Visible button background */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    opacity: 1; /* Always visible on mobile */
+    color: var(--primary);
+}
+
+/* Controls Toolbar - Mobile Optimized */
+.controls-toolbar {
+    flex-direction: row; /* Keep side by side if possible, or wrap */
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.discord-controls {
+    width: 100%;
+    display: flex;
+    gap: 0.75rem;
+}
+
+#configDiscordBtn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-discord {
+    flex: 1;
+    height: 48px; /* Large touch target */
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+}
+
+/* Avatar consistency */
+.avatar {
+    width: 48px; /* Larger avatars for mobile */
+    height: 48px;
+    min-width: 48px;
+    font-size: 1rem;
+    border-width: 2px;
+}
+
+/* Modal mobile optimizations */
+.modal-content {
+    width: 95%;
+    max-width: 100%;
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 20px;
+    bottom: 0;
+}
+
+.person-option {
+    padding: 1rem; /* Larger touch area */
+}
+

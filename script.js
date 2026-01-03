@@ -379,10 +379,23 @@ function updateDiscordButtonState() {
     sendDiscordBtn.title = "Send to Discord";
 }
 
+// Password Protection
+const CONFIG_PASSWORD = 'Shiftmate123!@#';
+
 function openDiscordConfig() {
-    webhookUrlInput.value = getWebhookUrl();
-    discordConfigModal.classList.remove('hidden');
-    discordConfigModal.style.display = 'flex';
+    const userPass = prompt("🔒 Enter admin password to configure webhook:");
+    if (userPass === CONFIG_PASSWORD) {
+        webhookUrlInput.value = getWebhookUrl();
+        // Determine what to show in the input so specific default URL is hidden from view unless explicitly set
+        // Actually, user wants to see it if they are configuring it.
+        // But if it's default, maybe we show placeholder?
+        // Let's just show whatever getWebhookUrl returns (which is default) so they know what follows.
+
+        discordConfigModal.classList.remove('hidden');
+        discordConfigModal.style.display = 'flex';
+    } else if (userPass !== null) {
+        alert("❌ Incorrect password! Access denied.");
+    }
 }
 
 function closeDiscordConfig() {
