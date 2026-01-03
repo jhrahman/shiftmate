@@ -863,3 +863,43 @@ header .current-date {
     padding: 1rem; /* Larger touch area */
 }
 
+
+/* Fix Overlap Issue */
+.mobile-fix-applied { display: block; } /* Marker */
+
+@media (max-width: 640px) {
+    /* Adjust Time Column to make space or move it */
+    .col-time {
+        position: relative;
+        padding-right: 50px; /* Make space for the absolute icon */
+        margin-right: 0;
+        align-items: flex-start; /* Align text to left */
+        flex-direction: column; /* Stack time and name */
+        gap: 0.25rem;
+    }
+
+    /* Move the pen icon to be clearly Top-Right of the row/card */
+    .col-action {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        z-index: 10;
+        margin: 0;
+    }
+
+    /* Ensure Shift Name has specific styling */
+    .shift-name {
+        order: -1;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+        display: block;
+        width: 100%;
+    }
+
+    /* Time Badge below name */
+    .time-badge {
+        font-size: 0.8rem;
+        align-self: flex-start;
+    }
+}
+
