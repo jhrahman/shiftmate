@@ -903,3 +903,36 @@ header .current-date {
     }
 }
 
+
+/* FORCE FIX for Icon Overlap */
+@media (max-width: 640px) {
+    .col-time {
+        width: auto !important;
+        max-width: calc(100% - 50px) !important; /* Leave 50px space for icon */
+        padding-right: 0 !important;
+        margin-right: 0 !important;
+        display: flex !important;
+        flex-direction: column !important; /* Stack Name/Time */
+        align-items: flex-start !important;
+    }
+    
+    .col-action {
+        position: absolute !important;
+        top: 1.5rem !important; /* Match padding of row */
+        right: 1.5rem !important;
+        width: 40px !important;
+        height: 40px !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 100 !important;
+    }
+
+    .schedule-row {
+        position: relative !important;
+        padding-top: 1.5rem !important;
+    }
+}
+
