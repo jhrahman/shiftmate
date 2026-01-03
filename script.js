@@ -97,7 +97,8 @@ function _internalUpdateRoster() {
     renderShifts(morningPerson, eveningPeople);
 
     // Update Override Indicator (Visual Cue)
-    const editBtn = document.getElementById('editShiftBtn');
+    // Style the edit button if overridden
+    const editBtn = document.getElementById('editMorningBtn');
     if (editBtn) {
         if (overrideId) {
             editBtn.style.color = 'var(--accent-morning)';
@@ -120,19 +121,29 @@ function renderWeekInfo(mon) {
 
     const options = { month: 'short', day: 'numeric' };
     const monStr = mon.toLocaleDateString('en-US', options);
-    const friStr = fri.toLocaleDateString('en-US', options);
+    const friStr = fri.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
     document.getElementById('weekRange').textContent = `${monStr} - ${friStr}`;
 
-    if (currentOffset === 0) {
+    // Saturday/Sunday Logic: Adjust Title labels
+    const d = new Date();
+    const isWeekendShift = (d.getDay() === 6 || d.getDay() === 0);
+
+    // Relative labels based on the "Weekend Shift"
+    let displayOffset = currentOffset;
+    if (isWeekendShift) {
+        displayOffset = currentOffset - 1;
+    }
+
+    if (displayOffset === 0) {
         document.getElementById('weekTitle').textContent = "Current Week";
-    } else if (currentOffset === 1) {
+    } else if (displayOffset === 1) {
         document.getElementById('weekTitle').textContent = "Next Week";
-    } else if (currentOffset === -1) {
-        document.getElementById('weekTitle').textContent = "Last Week";
+    } else if (displayOffset === -1) {
+        document.getElementById('weekTitle').textContent = "Previous Week";
     } else {
-        const absOffset = Math.abs(currentOffset);
-        const direction = currentOffset > 0 ? "Weeks from Now" : "Weeks Ago";
+        const absOffset = Math.abs(displayOffset);
+        const direction = displayOffset > 0 ? "Weeks from Now" : "Weeks Ago";
         document.getElementById('weekTitle').textContent = `${absOffset} ${direction}`;
     }
 }
