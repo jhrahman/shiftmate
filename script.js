@@ -551,13 +551,13 @@ async function sendToDiscord() {
         color: 0x3b82f6,
         fields: [
             {
-                name: "```ansi\n\u001b[0;33m☀️ MORNING SHIFT\u001b[0m\n```",
+                name: "☀️ MORNING SHIFT",
                 value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)`,
                 inline: false
             },
             {
-                name: "\u200B",
-                value: "```ansi\n\u001b[0;34m🌙 EVENING SHIFT\u001b[0m\n```",
+                name: "🌙 EVENING SHIFT",
+                value: "\u200B", // Empty value for header field
                 inline: false
             },
             {
