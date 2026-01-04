@@ -22,8 +22,13 @@
                     style="height: 36px; width: auto; border-radius: 8px; vertical-align: middle;">
                 <span>ShiftMate</span>
             </div>
-            <div class="current-date" id="currentDateDisplay">
-                <!-- Date inserted by JS -->
+            <div class="header-actions">
+                <button id="configDiscordBtn" class="icon-btn-header" title="Configure Discord Webhook">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <div class="current-date" id="currentDateDisplay">
+                    <!-- Date inserted by JS -->
+                </div>
             </div>
         </header>
 
@@ -48,9 +53,6 @@
                         <button id="toggleTimeBtn" class="toggle-btn">24h</button>
                     </div>
                     <div class="discord-controls">
-                        <button id="configDiscordBtn" class="icon-btn-small" title="Configure Discord Webhook">
-                            <i class="fa-solid fa-gear"></i>
-                        </button>
                         <button id="sendDiscordBtn" class="btn-discord" title="Send to Discord">
                             <i class="fa-brands fa-discord"></i> Notify Discord
                         </button>
@@ -157,10 +159,8 @@
                 </div>
             </div>
 
-            <section class="info-card">
-                <h3><i class="fa-solid fa-circle-info"></i> Schedule Info</h3>
-                <p>Timezone: Dhaka (UTC+6)</p>
-                <p>Work Days: Monday - Friday</p>
+            <section class="work-days-info">
+                <p><i class="fa-solid fa-calendar-days"></i> Work Days: Monday - Friday</p>
             </section>
         </main>
 
