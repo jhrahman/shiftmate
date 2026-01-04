@@ -551,24 +551,24 @@ async function sendToDiscord() {
         color: 0x3b82f6,
         fields: [
             {
-                name: "☀️ MORNING SHIFT",
-                value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)`,
+                name: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                value: "\u200B",
                 inline: false
             },
             {
-                name: "🌙 EVENING SHIFT",
-                value: "\u200B", // Empty value for header field
+                name: "☀️  MORNING SHIFT",
+                value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
                 inline: false
             },
             {
-                name: "⏰ Time",
-                value: `**Dhaka:** 12:00 PM - 08:00 PM\n**Oslo:** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}`,
-                inline: true
+                name: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                value: "\u200B",
+                inline: false
             },
             {
-                name: "👤 Assignees",
-                value: eveningPeople.map(p => `**${p.name}** (\`${p.short}\`)`).join('\n'),
-                inline: true
+                name: "🌙  EVENING SHIFT",
+                value: `⏰ **Time (Dhaka):** 12:00 PM - 08:00 PM\n🌍 **Time (Oslo):** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
+                inline: false
             }
         ],
         footer: {
