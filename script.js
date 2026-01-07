@@ -343,10 +343,66 @@ async function checkPin(callback) {
 
     const hashedInput = await hashString(pin);
     if (hashedInput === ACTION_PIN_HASH) {
-        callback();
+        callback(pin);
     } else {
         alert("❌ Incorrect PIN!");
     }
+}
+
+// Global to store public encrypted config
+window.PUBLIC_CONFIG = null;
+
+async function fetchPublicConfig() {
+    try {
+        const res = await fetch('https://jhrahman.github.io/shiftmate/scripts/discord_config.json');
+        if (res.ok) {
+            window.PUBLIC_CONFIG = await res.json();
+            console.log('📦 Loaded public encrypted configuration');
+        }
+    } catch (e) {
+        console.warn('Public config not found or unreachable');
+    }
+}
+
+// Simple Encryption/Decryption helpers using the PIN
+async function decryptWebhook(pin) {
+    if (!window.PUBLIC_CONFIG || !window.PUBLIC_CONFIG.v) return null;
+
+    try {
+        const data = atob(window.PUBLIC_CONFIG.v);
+        const parts = data.split(':');
+        const iv = new Uint8Array(parts[0].split(',').map(Number));
+        const encrypted = new Uint8Array(parts[1].split(',').map(Number));
+
+        const keyMaterial = await crypto.subtle.importKey(
+            "raw", new TextEncoder().encode(pin.padStart(16, '0')), "PBKDF2", false, ["deriveKey"]
+        );
+        const key = await crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: new TextEncoder().encode("shiftmate-salt"), iterations: 1000, hash: "SHA-256" },
+            keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
+        );
+
+        const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, encrypted);
+        return new TextDecoder().decode(decrypted);
+    } catch (e) {
+        console.error('Decryption failed:', e);
+        return null;
+    }
+}
+
+async function encryptWebhook(pin, url) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const keyMaterial = await crypto.subtle.importKey(
+        "raw", new TextEncoder().encode(pin.padStart(16, '0')), "PBKDF2", false, ["deriveKey"]
+    );
+    const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: new TextEncoder().encode("shiftmate-salt"), iterations: 1000, hash: "SHA-256" },
+        keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt"]
+    );
+
+    const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, new TextEncoder().encode(url));
+    const blob = iv.toString() + ':' + new Uint8Array(encrypted).toString();
+    return btoa(blob);
 }
 
 document.getElementById('editMorningBtn').addEventListener('click', () => checkPin(() => openModal('morning')));
@@ -522,10 +578,18 @@ async function syncSettingsFromGithub() {
 function updateDiscordButtonState() {
     const webhookUrl = getWebhookUrl();
     const githubToken = getGithubToken();
+    const hasPublicConfig = !!(window.PUBLIC_CONFIG && window.PUBLIC_CONFIG.v);
 
-    if (webhookUrl || githubToken) {
+    if (webhookUrl || githubToken || hasPublicConfig) {
         sendDiscordBtn.disabled = false;
-        sendDiscordBtn.title = webhookUrl ? "Send to Discord (Direct)" : "Send to Discord (GitHub Action)";
+
+        if (githubToken) {
+            sendDiscordBtn.title = "Send to Discord (GitHub Action)";
+        } else if (webhookUrl) {
+            sendDiscordBtn.title = "Send to Discord (Direct)";
+        } else {
+            sendDiscordBtn.title = "Send to Discord (Requires PIN)";
+        }
     } else {
         sendDiscordBtn.disabled = true;
         sendDiscordBtn.title = "Please configure Discord webhook or GitHub Token first";
@@ -596,30 +660,66 @@ saveWebhookBtn.addEventListener('click', () => {
         saveWebhookBtn.disabled = true;
         saveWebhookBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
 
-        syncSettingsToGithub(token, url)
-            .then(() => {
-                if (isIncognito()) {
-                    alert('✅ Settings synced to your GitHub Repository! Access them from any device by entering your token.');
-                } else {
-                    alert('✅ Settings saved locally and synced to GitHub!');
-                }
-            })
-            .catch(err => {
-                console.error('GH Sync Error:', err);
-                alert('⚠️ Settings saved locally, but failed to sync to GitHub: ' + err.message);
-            })
-            .finally(() => {
-                saveWebhookBtn.disabled = false;
-                saveWebhookBtn.innerHTML = 'Save Settings';
-            });
-    } else {
-        if (isIncognito()) {
-            alert('⚠️ Warning: You are in Incognito mode. Settings will disappear. Enter a GitHub Token to enable cross-device persistence.');
-        } else {
-            alert('✅ Settings saved locally!');
+        // 1. Sync to Variables (Internal storage)
+        const p1 = syncSettingsToGithub(token, url);
+
+        // 2. Sync to Public Encrypted File (Cross-device without settings repeated)
+        const pin = prompt("🔐 Confirm your 4-digit PIN to enable Cross-Device Sync:");
+        if (!pin) {
+            saveWebhookBtn.disabled = false;
+            saveWebhookBtn.innerHTML = 'Save Settings';
+            return;
         }
+
+        encryptWebhook(pin, url).then(encryptedBlob => {
+            return commitFileToGithub(token, 'scripts/discord_config.json', JSON.stringify({ v: encryptedBlob }));
+        }).then(() => {
+            alert('🚀 Cross-device sync enabled! You can now use "Notify Discord" on ANY device using just your PIN.');
+        }).catch(err => {
+            console.error('Sync error:', err);
+            alert('⚠️ Local settings saved, but sync failed: ' + err.message);
+        }).finally(() => {
+            saveWebhookBtn.disabled = false;
+            saveWebhookBtn.innerHTML = 'Save Settings';
+        });
+    } else {
+        alert('✅ Settings saved locally!');
     }
 });
+
+async function commitFileToGithub(token, path, content) {
+    const baseUrl = `https://api.github.com/repos/jhrahman/shiftmate/contents/${path}`;
+
+    // Get existing file SHA if it exists
+    const getRes = await fetch(baseUrl, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    let sha = null;
+    if (getRes.ok) {
+        const data = await getRes.json();
+        sha = data.sha;
+    }
+
+    const res = await fetch(baseUrl, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: `chore: update encrypted discord config`,
+            content: btoa(content),
+            sha: sha
+        })
+    });
+
+    if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Failed to commit config: ${err}`);
+    }
+}
 
 async function triggerGithubAction() {
     const token = getGithubToken();
@@ -650,9 +750,18 @@ async function triggerGithubAction() {
     }
 }
 
-async function sendToDiscord() {
-    const webhookUrl = getWebhookUrl();
+async function sendToDiscord(pin) {
+    let webhookUrl = getWebhookUrl();
     const githubToken = getGithubToken();
+
+    // If no local config, try to decrypt from public repo file using the PIN
+    if (!webhookUrl && !githubToken && pin) {
+        webhookUrl = await decryptWebhook(pin);
+        if (!webhookUrl) {
+            alert('❌ Decryption failed! Please ensure your PIN is correct and sync has been performed.');
+            return;
+        }
+    }
 
     if (!webhookUrl && !githubToken) {
         alert('Please configure Discord webhook or GitHub Token first');
@@ -792,6 +901,7 @@ sendDiscordBtn.addEventListener('click', () => checkPin(sendToDiscord));
 
 // Init
 async function init() {
+    await fetchPublicConfig();
     updateDiscordButtonState();
     await syncSettingsFromGithub();
     updateRoster();
