@@ -832,7 +832,7 @@ async function sendToDiscord(pin) {
     const embed = {
         title: "📅 Weekly Roster Schedule",
         description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) & Oslo (CET/CEST)\n\u200B`,
-        color: 0x3b82f6,
+        color: 0x4289F7,
         fields: [
             {
                 name: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
@@ -841,7 +841,7 @@ async function sendToDiscord(pin) {
             },
             {
                 name: "☀️  MORNING SHIFT",
-                value: `⏰ **Dhaka:** 08:00 AM - 16:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
+                value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
                 inline: false
             },
             {
@@ -851,7 +851,7 @@ async function sendToDiscord(pin) {
             },
             {
                 name: "🌙  EVENING SHIFT",
-                value: `⏰ **Time (Dhaka):** 12:00 PM - 20:00 PM\n🌍 **Time (Oslo):** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
+                value: `⏰ **Time (Dhaka):** 12:00 PM - 08:00 PM\n🌍 **Time (Oslo):** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
                 inline: false
             }
         ],

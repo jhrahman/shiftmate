@@ -107,7 +107,7 @@ async function main() {
         const embed = {
             title: "📅 Weekly Roster Schedule",
             description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) & Oslo (CET/CEST)\n\u200B`,
-            color: 0x3b82f6,
+            color: 0x4289F7,
             fields: [
                 {
                     name: "☀️  MORNING SHIFT",
