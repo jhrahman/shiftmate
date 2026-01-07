@@ -428,9 +428,8 @@ function updateRoster() {
     updateDiscordButtonState();
 }
 
-// Discord Integration
+// Discord Integration (GitHub-Only Flow)
 const DISCORD_WEBHOOK_KEY = 'discord_webhook_url';
-const DEFAULT_WEBHOOK_URL = 'https://discord.com/api/webhooks/1457044858693751078/aWE9WieKwx02Q0etBPW-baDaa_-zFogd7CIQhCCxulFWHZWs_6W-2vQUzJlxKlltDSLY';
 
 const discordConfigModal = document.getElementById('discordConfigModal');
 const configDiscordBtn = document.getElementById('configDiscordBtn');
@@ -440,23 +439,22 @@ const webhookUrlInput = document.getElementById('webhookUrlInput');
 const sendDiscordBtn = document.getElementById('sendDiscordBtn');
 
 function getWebhookUrl() {
-    const stored = localStorage.getItem(DISCORD_WEBHOOK_KEY);
-    return stored ? stored : DEFAULT_WEBHOOK_URL;
+    return localStorage.getItem(DISCORD_WEBHOOK_KEY);
 }
 
 function saveWebhookUrl(url) {
-    // If user saves the specific default URL, just clear storage to use default logic
-    if (url === DEFAULT_WEBHOOK_URL) {
-        localStorage.removeItem(DISCORD_WEBHOOK_KEY);
-    } else {
-        localStorage.setItem(DISCORD_WEBHOOK_KEY, url);
-    }
+    localStorage.setItem(DISCORD_WEBHOOK_KEY, url);
 }
 
 function updateDiscordButtonState() {
-    // Button is always enabled now because we have a default
-    sendDiscordBtn.disabled = false;
-    sendDiscordBtn.title = "Send to Discord";
+    const webhookUrl = getWebhookUrl();
+    if (webhookUrl) {
+        sendDiscordBtn.disabled = false;
+        sendDiscordBtn.title = "Send to Discord";
+    } else {
+        sendDiscordBtn.disabled = true;
+        sendDiscordBtn.title = "Please configure Discord webhook first";
+    }
 }
 
 // Password Protection Configuration
@@ -466,7 +464,7 @@ async function openDiscordConfig() {
 
     const hashedInput = await hashString(userPass);
     if (hashedInput === CONFIG_PASS_HASH) {
-        webhookUrlInput.value = getWebhookUrl();
+        webhookUrlInput.value = getWebhookUrl() || "";
         discordConfigModal.classList.remove('hidden');
         discordConfigModal.style.display = 'flex';
     } else {
@@ -492,7 +490,7 @@ saveWebhookBtn.addEventListener('click', () => {
         saveWebhookUrl(url);
         closeDiscordConfig();
         updateDiscordButtonState();
-        alert('Discord webhook saved successfully!');
+        alert('✅ Discord webhook saved successfully in your browser!');
     } else {
         alert('Please enter a valid Discord webhook URL');
     }
