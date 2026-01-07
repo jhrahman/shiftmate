@@ -430,13 +430,16 @@ function updateRoster() {
 
 // Discord Integration (GitHub-Only Flow)
 const DISCORD_WEBHOOK_KEY = 'discord_webhook_url';
+const GITHUB_TOKEN_KEY = 'github_token';
 
 const discordConfigModal = document.getElementById('discordConfigModal');
 const configDiscordBtn = document.getElementById('configDiscordBtn');
 const closeDiscordConfigBtn = document.getElementById('closeDiscordConfigBtn');
 const saveWebhookBtn = document.getElementById('saveWebhookBtn');
 const webhookUrlInput = document.getElementById('webhookUrlInput');
+const githubTokenInput = document.getElementById('githubTokenInput');
 const sendDiscordBtn = document.getElementById('sendDiscordBtn');
+const incognitoWarning = document.getElementById('incognitoWarning');
 
 function getWebhookUrl() {
     return localStorage.getItem(DISCORD_WEBHOOK_KEY);
@@ -446,14 +449,34 @@ function saveWebhookUrl(url) {
     localStorage.setItem(DISCORD_WEBHOOK_KEY, url);
 }
 
+function getGithubToken() {
+    return localStorage.getItem(GITHUB_TOKEN_KEY);
+}
+
+function saveGithubToken(token) {
+    localStorage.setItem(GITHUB_TOKEN_KEY, token);
+}
+
+function isIncognito() {
+    try {
+        localStorage.setItem('__test__', '1');
+        localStorage.removeItem('__test__');
+        return false;
+    } catch (e) {
+        return true;
+    }
+}
+
 function updateDiscordButtonState() {
     const webhookUrl = getWebhookUrl();
-    if (webhookUrl) {
+    const githubToken = getGithubToken();
+
+    if (webhookUrl || githubToken) {
         sendDiscordBtn.disabled = false;
-        sendDiscordBtn.title = "Send to Discord";
+        sendDiscordBtn.title = webhookUrl ? "Send to Discord (Direct)" : "Send to Discord (GitHub Action)";
     } else {
         sendDiscordBtn.disabled = true;
-        sendDiscordBtn.title = "Please configure Discord webhook first";
+        sendDiscordBtn.title = "Please configure Discord webhook or GitHub Token first";
     }
 }
 
@@ -465,6 +488,15 @@ async function openDiscordConfig() {
     const hashedInput = await hashString(userPass);
     if (hashedInput === CONFIG_PASS_HASH) {
         webhookUrlInput.value = getWebhookUrl() || "";
+        githubTokenInput.value = getGithubToken() || "";
+
+        // Show incognito warning
+        if (isIncognito()) {
+            if (incognitoWarning) incognitoWarning.classList.add('active');
+        } else {
+            if (incognitoWarning) incognitoWarning.classList.remove('active');
+        }
+
         discordConfigModal.classList.remove('hidden');
         discordConfigModal.style.display = 'flex';
     } else {
@@ -486,20 +518,70 @@ closeDiscordConfigBtn.addEventListener('click', closeDiscordConfig);
 
 saveWebhookBtn.addEventListener('click', () => {
     const url = webhookUrlInput.value.trim();
-    if (url && url.startsWith('https://discord.com/api/webhooks/')) {
-        saveWebhookUrl(url);
-        closeDiscordConfig();
-        updateDiscordButtonState();
-        alert('✅ Discord webhook saved successfully in your browser!');
+    const token = githubTokenInput.value.trim();
+
+    if (url) {
+        if (url.startsWith('https://discord.com/api/webhooks/')) {
+            saveWebhookUrl(url);
+        } else {
+            alert('Please enter a valid Discord webhook URL');
+            return;
+        }
     } else {
-        alert('Please enter a valid Discord webhook URL');
+        localStorage.removeItem(DISCORD_WEBHOOK_KEY);
+    }
+
+    if (token) {
+        saveGithubToken(token);
+    } else {
+        localStorage.removeItem(GITHUB_TOKEN_KEY);
+    }
+
+    closeDiscordConfig();
+    updateDiscordButtonState();
+
+    if (isIncognito()) {
+        alert('⚠️ Warning: You are in Incognito mode. These settings will disappear when you close this window.');
+    } else {
+        alert('✅ Settings saved successfully!');
     }
 });
 
+async function triggerGithubAction() {
+    const token = getGithubToken();
+    if (!token) throw new Error("GitHub Token missing");
+
+    // Calculate current offset for the Action
+    // GitHub Action script defaults to 1 (next week), so we pass the current offset
+    // relative to what we are viewing.
+    // If we want the CURRENT view's roster, we need to pass that offset.
+    const response = await fetch('https://api.github.com/repos/jhrahman/shiftmate/actions/workflows/weekly-notify.yml/dispatches', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            ref: 'main',
+            inputs: {
+                week_offset: currentOffset.toString()
+            }
+        })
+    });
+
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`GitHub API Error: ${response.status} ${err}`);
+    }
+}
+
 async function sendToDiscord() {
     const webhookUrl = getWebhookUrl();
-    if (!webhookUrl) {
-        alert('Please configure Discord webhook first');
+    const githubToken = getGithubToken();
+
+    if (!webhookUrl && !githubToken) {
+        alert('Please configure Discord webhook or GitHub Token first');
         return;
     }
 
@@ -508,6 +590,27 @@ async function sendToDiscord() {
         return;
     }
 
+    // Modal behavior: Prefer GitHub Action if token is available for "all time"/managed experience
+    if (githubToken) {
+        try {
+            sendDiscordBtn.disabled = true;
+            sendDiscordBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Triggering Action...';
+
+            await triggerGithubAction();
+
+            alert('🚀 GitHub Action triggered! The roster will be sent to Discord shortly using your secure GitHub Secret.');
+        } catch (error) {
+            console.error('GH Trigger error:', error);
+            alert('❌ Failed to trigger GitHub Action: ' + error.message);
+        } finally {
+            sendDiscordBtn.disabled = false;
+            sendDiscordBtn.innerHTML = '<i class="fa-brands fa-discord"></i> Notify Discord';
+            updateDiscordButtonState();
+        }
+        return;
+    }
+
+    // Fallback: Direct Webhook (Backup)
     // Get current roster data
     const dateStr = getDateKey(currentTargetMonday);
     const overrides = getOverrides();
@@ -555,7 +658,7 @@ async function sendToDiscord() {
             },
             {
                 name: "☀️  MORNING SHIFT",
-                value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
+                value: `⏰ **Dhaka:** 08:00 AM - 16:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
                 inline: false
             },
             {
@@ -565,7 +668,7 @@ async function sendToDiscord() {
             },
             {
                 name: "🌙  EVENING SHIFT",
-                value: `⏰ **Time (Dhaka):** 12:00 PM - 08:00 PM\n🌍 **Time (Oslo):** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
+                value: `⏰ **Time (Dhaka):** 12:00 PM - 20:00 PM\n🌍 **Time (Oslo):** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
                 inline: false
             }
         ],

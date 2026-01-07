@@ -880,3 +880,27 @@ footer {
         min-width: 160px !important;
     }
 }
+
+.persistence-warning {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.persistence-warning.active {
+    display: flex;
+}
+
+.modal-intro {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+

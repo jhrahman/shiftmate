@@ -79,9 +79,14 @@ async function main() {
     }
 
     try {
-        // Calculate for the upcoming week (Monday start)
+        // Calculate for the target week
+        // Default to upcoming week (offset 1) if no argument provided
+        const offset = parseInt(process.argv[2]) || 1;
+        console.log(`ℹ️ Using week offset: ${offset}`);
+
         const today = new Date();
-        const { morningPerson, eveningPeople, weekRange, targetMonday } = getRosterForDate(new Date(today.getTime() + ONE_WEEK_MS));
+        const targetDate = new Date(today.getTime() + (offset * ONE_WEEK_MS));
+        const { morningPerson, eveningPeople, weekRange, targetMonday } = getRosterForDate(targetDate);
 
         const osloOptions = { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', hour12: true };
         const osloFormat = new Intl.DateTimeFormat('en-US', osloOptions);

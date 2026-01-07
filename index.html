@@ -141,20 +141,38 @@
             <!-- Discord Config Modal -->
             <div id="discordConfigModal" class="modal hidden">
                 <div class="modal-content">
-                    <h3>Discord Webhook Configuration</h3>
-                    <p>Enter your Discord webhook URL to enable notifications:</p>
+                    <h3><i class="fa-brands fa-discord"></i> Discord Integration</h3>
+                    <p class="modal-intro">Configure how notifications are sent to your team.</p>
+
                     <div class="input-group">
-                        <label for="webhookUrlInput">Webhook URL:</label>
+                        <label for="webhookUrlInput">Discord Webhook URL (Direct Backup):</label>
                         <input type="url" id="webhookUrlInput" placeholder="https://discord.com/api/webhooks/..."
                             class="webhook-input">
                         <small class="help-text">
                             <i class="fa-solid fa-circle-info"></i>
-                            Get this from Discord: Server Settings → Integrations → Webhooks
+                            Stored in your browser. Used for "Notify Discord" button.
                         </small>
                     </div>
+
+                    <div class="input-group"
+                        style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <label for="githubTokenInput">GitHub Token (For Automated/Persistent):</label>
+                        <input type="password" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxx"
+                            class="webhook-input">
+                        <small class="help-text">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            Required to trigger GitHub Actions manually from here.
+                        </small>
+                    </div>
+
+                    <div class="persistence-warning" id="incognitoWarning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Incognito mode detected. Settings will not persist after closing.</span>
+                    </div>
+
                     <div class="modal-actions">
                         <button id="closeDiscordConfigBtn" class="btn-cancel">Cancel</button>
-                        <button id="saveWebhookBtn" class="btn-save">Save Webhook</button>
+                        <button id="saveWebhookBtn" class="btn-save">Save Settings</button>
                     </div>
                 </div>
             </div>
