@@ -12,8 +12,16 @@ const team = [
 
 function getMonday(d) {
     d = new Date(d);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    var day = d.getDay();
+    // If Sat (6) or Sun (0), we treat it as part of the upcoming week's cycle
+    var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+
+    // UI behavior: Saturday and Sunday shift 'Current' to the next Monday
+    if (day === 6 || day === 0) {
+        // We add 7 days to the 'standard' Monday calculation
+        diff += 7;
+    }
+
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
@@ -80,8 +88,8 @@ async function main() {
 
     try {
         // Calculate for the target week
-        // Default to upcoming week (offset 1) if no argument provided
-        const offset = parseInt(process.argv[2]) || 1;
+        // Default to current/active week (offset 0)
+        const offset = parseInt(process.argv[2]) || 0;
         console.log(`ℹ️ Using week offset: ${offset}`);
 
         const today = new Date();

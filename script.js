@@ -15,14 +15,10 @@ const team = [
 const REFERENCE_MONDAY = new Date('2026-01-05T00:00:00');
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-// State
-let currentOffset = 0; // Weeks from current week
+// Logic: offset 0 is the current/next active week
+// getMonday(today) now automatically shifts on Sat/Sun
+let currentOffset = 0;
 
-// Logic: If today is Saturday (6) or Sunday (0), show the NEXT week by default
-const _today = new Date();
-if (_today.getDay() === 6 || _today.getDay() === 0) {
-    currentOffset = 1;
-}
 
 let currentTargetMonday = null; // To store the currently viewed week's Monday
 
@@ -48,8 +44,15 @@ function removeOverride(mondayStr) {
 
 function getMonday(d) {
     d = new Date(d);
-    var day = d.getDay(),
-        diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    var day = d.getDay();
+    // Standard Monday calculation
+    var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+
+    // UI behavior: Saturday and Sunday shift focus to the next week
+    if (day === 6 || day === 0) {
+        diff += 7;
+    }
+
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
@@ -125,17 +128,11 @@ function renderWeekInfo(mon) {
 
     document.getElementById('weekRange').textContent = `${monStr} - ${friStr}`;
 
-    // Reliable Date-based labeling (Independent of currentOffset state)
+    // Reliable Date-based labeling using the new getMonday logic
     const today = new Date();
-    const todayMonday = getMonday(today);
+    const baselineMonday = getMonday(today);
 
-    // Baseline shifted Monday (If Sat/Sun, Current = upcoming Monday)
-    const baselineMonday = new Date(todayMonday);
-    if (today.getDay() === 6 || today.getDay() === 0) {
-        baselineMonday.setDate(todayMonday.getDate() + 7);
-    }
-
-    // Difference in weeks
+    // Difference in weeks from the 'Active' week
     const diffWeeks = Math.round((mon.getTime() - baselineMonday.getTime()) / ONE_WEEK_MS);
 
     let titleLabel = "";
@@ -467,6 +464,61 @@ function isIncognito() {
     }
 }
 
+async function syncSettingsToGithub(token, webhookUrl) {
+    const varName = 'PUBLIC_DISCORD_WEBHOOK_URL';
+    const baseUrl = 'https://api.github.com/repos/jhrahman/shiftmate/actions/variables';
+
+    try {
+        const checkRes = await fetch(`${baseUrl}/${varName}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+
+        const method = checkRes.ok ? 'PATCH' : 'POST';
+        const url = checkRes.ok ? `${baseUrl}/${varName}` : baseUrl;
+        const body = { name: varName, value: webhookUrl || "" };
+
+        const res = await fetch(url, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`GitHub Sync Failed (${res.status}): ${err}`);
+        }
+    } catch (e) {
+        throw new Error("Ensure your token has 'repo' scope and 'Variables: Write' permission. " + e.message);
+    }
+}
+
+async function syncSettingsFromGithub() {
+    const token = getGithubToken();
+    if (!token) return;
+
+    try {
+        const varName = 'PUBLIC_DISCORD_WEBHOOK_URL';
+        const res = await fetch(`https://api.github.com/repos/jhrahman/shiftmate/actions/variables/${varName}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            if (data.value && data.value !== getWebhookUrl()) {
+                saveWebhookUrl(data.value);
+                updateDiscordButtonState();
+                console.log('🔄 Synced Webhook URL from GitHub');
+            }
+        }
+    } catch (error) {
+        console.error('Failed to sync settings from GitHub:', error);
+    }
+}
+
 function updateDiscordButtonState() {
     const webhookUrl = getWebhookUrl();
     const githubToken = getGithubToken();
@@ -540,10 +592,32 @@ saveWebhookBtn.addEventListener('click', () => {
     closeDiscordConfig();
     updateDiscordButtonState();
 
-    if (isIncognito()) {
-        alert('⚠️ Warning: You are in Incognito mode. These settings will disappear when you close this window.');
+    if (token) {
+        saveWebhookBtn.disabled = true;
+        saveWebhookBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+
+        syncSettingsToGithub(token, url)
+            .then(() => {
+                if (isIncognito()) {
+                    alert('✅ Settings synced to your GitHub Repository! Access them from any device by entering your token.');
+                } else {
+                    alert('✅ Settings saved locally and synced to GitHub!');
+                }
+            })
+            .catch(err => {
+                console.error('GH Sync Error:', err);
+                alert('⚠️ Settings saved locally, but failed to sync to GitHub: ' + err.message);
+            })
+            .finally(() => {
+                saveWebhookBtn.disabled = false;
+                saveWebhookBtn.innerHTML = 'Save Settings';
+            });
     } else {
-        alert('✅ Settings saved successfully!');
+        if (isIncognito()) {
+            alert('⚠️ Warning: You are in Incognito mode. Settings will disappear. Enter a GitHub Token to enable cross-device persistence.');
+        } else {
+            alert('✅ Settings saved locally!');
+        }
     }
 });
 
@@ -717,4 +791,10 @@ async function sendToDiscord() {
 sendDiscordBtn.addEventListener('click', () => checkPin(sendToDiscord));
 
 // Init
-updateRoster();
+async function init() {
+    updateDiscordButtonState();
+    await syncSettingsFromGithub();
+    updateRoster();
+}
+
+init();
