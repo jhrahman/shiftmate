@@ -4,6 +4,8 @@ const team = [
     { id: 3, name: "Alamin Abu Zaman", short: "AL" }
 ];
 
+const generalAssignee = { name: "Abul Kalam Azad", short: "AK" };
+
 // Configuration
 // Requirements: 
 // 1. Jahidur Morning (Week of Jan 5, 2026)
@@ -152,6 +154,10 @@ function renderWeekInfo(mon) {
 }
 
 function renderShifts(morning, eveningGroup) {
+    // General
+    document.getElementById('generalPerson').textContent = generalAssignee.name;
+    document.getElementById('generalAvatar').textContent = generalAssignee.short;
+
     // Morning
     document.getElementById('morningPerson').textContent = morning.name;
     document.getElementById('morningAvatar').textContent = morning.short;
@@ -825,6 +831,11 @@ async function sendToDiscord(pin) {
         description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6)\n\u200B`,
         color: 0x4289F7,
         fields: [
+            {
+                name: "💼  GENERAL SHIFT",
+                value: `⏰ **Dhaka:** General Hours\n👤 **Assignee:** **${generalAssignee.name}** (\`${generalAssignee.short}\`)\n\u200B`,
+                inline: false
+            },
             {
                 name: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
                 value: "\u200B",

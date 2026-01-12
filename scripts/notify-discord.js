@@ -10,6 +10,8 @@ const team = [
     { id: 3, name: "Alamin Abu Zaman", short: "AL" }
 ];
 
+const generalAssignee = { name: "Abul Kalam Azad", short: "AK" };
+
 function getMonday(d) {
     d = new Date(d);
     var day = d.getDay();
@@ -109,6 +111,16 @@ async function main() {
             description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6)\n\u200B`,
             color: 0x4289F7,
             fields: [
+                {
+                    name: "💼  GENERAL SHIFT",
+                    value: `⏰ **Dhaka:** General Hours\n👤 **Assignee:** **${generalAssignee.name}** (\`${generalAssignee.short}\`)\n\u200B`,
+                    inline: false
+                },
+                {
+                    name: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                    value: "\u200B",
+                    inline: false
+                },
                 {
                     name: "☀️  MORNING SHIFT",
                     value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
