@@ -96,22 +96,22 @@ async function main() {
         const targetDate = new Date(today.getTime() + (offset * ONE_WEEK_MS));
         const { morningPerson, eveningPeople, weekRange, targetMonday } = getRosterForDate(targetDate);
 
-        const osloOptions = { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', hour12: true };
-        const osloFormat = new Intl.DateTimeFormat('en-US', osloOptions);
-
-        const mStart = new Date(targetMonday); mStart.setHours(8, 0);
-        const mEnd = new Date(targetMonday); mEnd.setHours(16, 0);
-        const eStart = new Date(targetMonday); eStart.setHours(12, 0);
-        const eEnd = new Date(targetMonday); eEnd.setHours(20, 0);
+        let footerText = "ShiftMate • Automated Roster System";
+        const eventName = process.env.GITHUB_EVENT_NAME;
+        if (eventName === 'schedule') {
+            footerText += "\n🔁 Automation triggered by GitHub Actions";
+        } else if (eventName === 'workflow_dispatch') {
+            footerText += "\n▶️ Manually triggered from the web app";
+        }
 
         const embed = {
             title: "📅 Weekly Roster Schedule",
-            description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6) & Oslo (CET/CEST)\n\u200B`,
+            description: `**Week:** ${weekRange}\n**Timezone:** Dhaka (UTC+6)\n\u200B`,
             color: 0x4289F7,
             fields: [
                 {
                     name: "☀️  MORNING SHIFT",
-                    value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n🌍 **Oslo:** ${osloFormat.format(mStart)} - ${osloFormat.format(mEnd)}\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
+                    value: `⏰ **Dhaka:** 08:00 AM - 04:00 PM\n👤 **Assignee:** **${morningPerson.name}** (\`${morningPerson.short}\`)\n\u200B`,
                     inline: false
                 },
                 {
@@ -121,12 +121,12 @@ async function main() {
                 },
                 {
                     name: "🌙  EVENING SHIFT",
-                    value: `⏰ **Time (Dhaka):** 12:00 PM - 08:00 PM\n🌍 **Time (Oslo):** ${osloFormat.format(eStart)} - ${osloFormat.format(eEnd)}\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
+                    value: `⏰ **Time (Dhaka):** 12:00 PM - 08:00 PM\n👤 **Assignees:**\n${eveningPeople.map(p => `• **${p.name}** (\`${p.short}\`)`).join('\n')}`,
                     inline: false
                 }
             ],
             footer: {
-                text: "ShiftMate • Automated Roster System",
+                text: footerText,
                 icon_url: "https://jhrahman.github.io/shiftmate/logo.png"
             },
             timestamp: new Date().toISOString(),

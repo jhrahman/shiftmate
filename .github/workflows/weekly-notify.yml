@@ -26,4 +26,5 @@ jobs:
       - name: Send Notification
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: node scripts/notify-discord.js ${{ github.event.inputs.week_offset || '0' }}
