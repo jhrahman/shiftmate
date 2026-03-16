@@ -8,7 +8,7 @@ ShiftMate is a modern, responsive web application designed to manage and automat
 The app uses a consistent rotation logic based on a reference start date (Jan 5, 2026). 
 - **The Team**: Jahidur Rahman, Mahmudur Rahman Protic, and Alamin Abu Zaman.
 - **Cycle**: Each person takes a full week of Morning Shift in a predictable `A -> B -> C` sequence.
-- **Evening Shift**: Automatically assigned to the two people not on the Morning Shift.
+- **Evening Shift**: Automatically assigned to the two people not on the Morning Shift. 
 
 ### 2. Manual Shift Overrides
 Life happens! ShiftMate allows authorized users to manually change who is on which shift for any specific week.
